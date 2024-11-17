@@ -45,7 +45,31 @@ class ModelTrainer:
 
             }
 
-            model_report:dict = evaluate_model(X_train, y_train, X_test, y_test, models = models)
+            params = {
+                "Linear Regression" : {},
+                "K-Neighbors Regressor": {},
+                "Decision Tree" : {
+                    'criterion' : ['squared_error', 'friedman_mse', 'absolute_error', 'poisson']
+                },
+                "Random Forest Regressor" : {
+                    'n_estimators' : [8,16,32,64,128,256]
+                },
+                "XGBRegressor" : {
+                    'learning_rate' : [.1, .01, .05, .001],
+                    'n_estimators' : [8,16,32,64,128,256]
+                },
+                "CatBoosting Regressor" :{
+                    'depth' : [6,8,10],
+                    'learning_rate' : [0.01, 0.05, 0.1],
+                    'iterations' : [30,50,100]
+                },
+                "AdaBoost Regressor" : {
+                    'learning_rate' : [.1,.01,.5,.001],
+                    'n_estimators' : [8,16,32,64,128,256]
+                }
+            }
+
+            model_report:dict = evaluate_model(X_train, y_train, X_test, y_test, models = models, params = params)
 
             best_model_score = max(sorted(model_report.values()))
 
@@ -66,7 +90,7 @@ class ModelTrainer:
             predicted = best_model.predict(X_test)
             r_score = r2_score(y_test, predicted)
 
-            return r_score
+            return r_score, best_model
 
 
         except Exception as e:
